@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 """Script to ensure the pre-commit hook revs match what is installed."""
+
 import re
 import sys
 from functools import partial
