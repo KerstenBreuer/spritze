@@ -12,9 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Test dummy."""
+"""Test the context module."""
+
+import pytest
+
+from spritze.context import get_dependency_context, set_dependency_context
 
 
-def test_dummy():
+def test_simple_context():
     """A very simple example test."""
-    pass
+    deps = {str: lambda: "Hello, World!"}
+
+    with pytest.raises(RuntimeError):
+        get_dependency_context()
+
+    with set_dependency_context(deps) as _:  # type: ignore
+        assert get_dependency_context() == deps
+
+    with pytest.raises(RuntimeError):
+        get_dependency_context()
