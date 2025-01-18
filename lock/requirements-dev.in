@@ -8,7 +8,7 @@ pydantic-core>=2.27.2
 
 pre-commit>=3.1.1
 
-mypy>=1.0.0
+mypy>=1.14.0
 mypy-extensions>=1.0.0
 
 ruff>=0.0.290
