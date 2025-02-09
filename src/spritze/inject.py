@@ -1,0 +1,1 @@
+"""Registering objects for injection."""

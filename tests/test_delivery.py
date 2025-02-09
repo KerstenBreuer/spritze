@@ -16,18 +16,18 @@
 
 import pytest
 
-from spritze.context import get_dependency_context, set_dependency_context
+from spritze.context import DIContext
+from spritze.delivery import get_dependency_context, set_dependency_context
 
 
 def test_simple_context():
     """A very simple example test."""
-    deps = {str: lambda: "Hello, World!"}
-
+    context = DIContext()
     with pytest.raises(RuntimeError):
         get_dependency_context()
 
-    with set_dependency_context(deps) as _:  # type: ignore
-        assert get_dependency_context() == deps
+    with set_dependency_context(context):  # type: ignore
+        assert get_dependency_context() is context
 
     with pytest.raises(RuntimeError):
         get_dependency_context()
