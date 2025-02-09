@@ -14,20 +14,21 @@
 
 """Test the context module."""
 
+from unittest.mock import Mock
+
 import pytest
 
-from spritze.context import DIContext
 from spritze.delivery import get_dependency_context, set_dependency_context
 
 
 def test_simple_context():
     """A very simple example test."""
-    context = DIContext()
+    mock_context = Mock()
     with pytest.raises(RuntimeError):
         get_dependency_context()
 
-    with set_dependency_context(context):  # type: ignore
-        assert get_dependency_context() is context
+    with set_dependency_context(mock_context):  # type: ignore
+        assert get_dependency_context() is mock_context
 
     with pytest.raises(RuntimeError):
         get_dependency_context()

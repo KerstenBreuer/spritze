@@ -3,7 +3,7 @@
 from contextlib import contextmanager
 from contextvars import ContextVar
 
-from .context import DIContext
+from .container import DIContext
 
 _di_context_var: ContextVar[DIContext | None] = ContextVar(
     "dependency_context", default=None

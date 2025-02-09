@@ -1,6 +1,6 @@
 """Tests the describe module."""
 
-from typing import Callable
+from typing import Callable, Protocol
 
 import pytest
 
@@ -19,6 +19,14 @@ class Bar:
     pass
 
 
+class ExampleProtocol(Protocol):
+    """An example for a protocol."""
+
+    def foo(self) -> None:
+        """A method that must be implemented."""
+        ...
+
+
 NO_TYPE_ANNOTATION_PARAMETER_EXAMPLE = [
     ParameterDescription(name="a", type_=NoTypeAnnotation),
     ParameterDescription(name="b", type_=NoTypeAnnotation),
@@ -35,12 +43,17 @@ NOMINAL_PARAMETER_EXAMPLE = [
 ]
 
 GENERIC_PARAMETER_EXAMPLE = [
-    ParameterDescription(name="a", type_=list[int], uses_structural_subtyping=True),
+    ParameterDescription(name="a", type_=list[int], requires_structural_subtyping=True),
     ParameterDescription(
-        name="b", type_=dict[str, int], uses_structural_subtyping=True
+        name="b", type_=dict[str, int], requires_structural_subtyping=True
     ),
 ]
 
+PROTOCOL_PARAMETER_EXAMPLE = [
+    ParameterDescription(
+        name="a", type_=ExampleProtocol, requires_structural_subtyping=True
+    ),
+]
 
 # fmt: off
 lambda_with_no_type_annotation = lambda a, b: None
@@ -59,13 +72,18 @@ class ClassWithPrimitiveTypes:
         pass
 
 
-def fun_with_generic_types(a: list[int], b: dict[str, int]) -> None:
-    """A function with generic types."""
+def fun_with_nominal_types(a: Foo, b: Bar) -> None:
+    """A function with nominal types."""
     pass
 
 
-def fun_with_nominal_types(a: Foo, b: Bar) -> None:
-    """A function with nominal types."""
+def fun_with_protocol(a: ExampleProtocol) -> None:
+    """A function using an implementation of a protocol."""
+    pass
+
+
+def fun_with_generic_types(a: list[int], b: dict[str, int]) -> None:
+    """A function with generic types."""
     pass
 
 
@@ -75,8 +93,9 @@ def fun_with_nominal_types(a: Foo, b: Bar) -> None:
         (lambda_with_no_type_annotation, NO_TYPE_ANNOTATION_PARAMETER_EXAMPLE),
         (fun_with_primitive_types, PRIMITIVE_PARAMETER_EXAMPLE),
         (ClassWithPrimitiveTypes, PRIMITIVE_PARAMETER_EXAMPLE),
-        (fun_with_generic_types, GENERIC_PARAMETER_EXAMPLE),
         (fun_with_nominal_types, NOMINAL_PARAMETER_EXAMPLE),
+        (fun_with_generic_types, GENERIC_PARAMETER_EXAMPLE),
+        (fun_with_protocol, PROTOCOL_PARAMETER_EXAMPLE),
     ],
 )
 def test_describe_parameters(
