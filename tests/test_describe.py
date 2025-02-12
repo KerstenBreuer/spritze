@@ -57,7 +57,12 @@ PROTOCOL_PARAMETER_EXAMPLE = [
 
 # fmt: off
 lambda_with_no_type_annotation = lambda a, b: None
+lambda_with_no_parameters = lambda: None
 # fmt: on
+
+
+class ClassWithNoParameters:
+    """A class with no parameters."""
 
 
 def fun_with_primitive_types(a: int, b: str) -> None:
@@ -90,12 +95,14 @@ def fun_with_generic_types(a: list[int], b: dict[str, int]) -> None:
 @pytest.mark.parametrize(
     "target, expected_parameters",
     [
-        (lambda_with_no_type_annotation, NO_TYPE_ANNOTATION_PARAMETER_EXAMPLE),
         (fun_with_primitive_types, PRIMITIVE_PARAMETER_EXAMPLE),
         (ClassWithPrimitiveTypes, PRIMITIVE_PARAMETER_EXAMPLE),
         (fun_with_nominal_types, NOMINAL_PARAMETER_EXAMPLE),
         (fun_with_generic_types, GENERIC_PARAMETER_EXAMPLE),
         (fun_with_protocol, PROTOCOL_PARAMETER_EXAMPLE),
+        (lambda_with_no_type_annotation, NO_TYPE_ANNOTATION_PARAMETER_EXAMPLE),
+        (lambda_with_no_parameters, []),
+        (ClassWithNoParameters, []),
     ],
 )
 def test_describe_parameters(
