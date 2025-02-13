@@ -28,30 +28,32 @@ class ExampleProtocol(Protocol):
 
 
 NO_TYPE_ANNOTATION_PARAMETER_EXAMPLE = [
-    ParameterDescription(name="a", type_=NoTypeAnnotation),
-    ParameterDescription(name="b", type_=NoTypeAnnotation),
+    ParameterDescription(labels=frozenset("a"), type_=NoTypeAnnotation),
+    ParameterDescription(labels=frozenset("b"), type_=NoTypeAnnotation),
 ]
 
 PRIMITIVE_PARAMETER_EXAMPLE = [
-    ParameterDescription(name="a", type_=int),
-    ParameterDescription(name="b", type_=str),
+    ParameterDescription(labels=frozenset("a"), type_=int),
+    ParameterDescription(labels=frozenset("b"), type_=str),
 ]
 
 NOMINAL_PARAMETER_EXAMPLE = [
-    ParameterDescription(name="a", type_=Foo),
-    ParameterDescription(name="b", type_=Bar),
+    ParameterDescription(labels=frozenset("a"), type_=Foo),
+    ParameterDescription(labels=frozenset("b"), type_=Bar),
 ]
 
 GENERIC_PARAMETER_EXAMPLE = [
-    ParameterDescription(name="a", type_=list[int], requires_structural_subtyping=True),
     ParameterDescription(
-        name="b", type_=dict[str, int], requires_structural_subtyping=True
+        labels=frozenset("a"), type_=list[int], requires_structural_subtyping=True
+    ),
+    ParameterDescription(
+        labels=frozenset("b"), type_=dict[str, int], requires_structural_subtyping=True
     ),
 ]
 
 PROTOCOL_PARAMETER_EXAMPLE = [
     ParameterDescription(
-        name="a", type_=ExampleProtocol, requires_structural_subtyping=True
+        labels=frozenset("a"), type_=ExampleProtocol, requires_structural_subtyping=True
     ),
 ]
 

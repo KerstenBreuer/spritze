@@ -4,28 +4,19 @@ import inspect
 from collections.abc import Iterable
 from dataclasses import dataclass
 from types import FunctionType, ModuleType, NoneType
-from typing import Any, Callable, Protocol, TypeAlias
+from typing import Callable, Protocol
 
-
-class NoTypeAnnotation:
-    """To distinguish between None and not available."""
-
-
-NominalTypeAnnotation: TypeAlias = type | None
-
-StructuralTypeAnnotation: TypeAlias = Any
-
-TypeAnnotation: TypeAlias = (
-    NominalTypeAnnotation | StructuralTypeAnnotation | type[NoTypeAnnotation]
-)
+from .custom_types import NoTypeAnnotation, TypeAnnotation
 
 
 @dataclass
 class ParameterDescription:
     """Describes an parameter to a callable that shall be dependency injected."""
 
-    name: str
     type_: TypeAnnotation
+    labels: frozenset[str]
+    tags: frozenset[str] = frozenset()
+
     requires_structural_subtyping: bool = False
 
     # currently not in use:
@@ -63,7 +54,7 @@ def describe_parameters(target: Callable) -> Iterable[ParameterDescription]:
         requires_structural_subtyping = check_structural_subtyping_requirement(type_)
 
         yield ParameterDescription(
-            name=name,
+            labels=frozenset(name),
             type_=type_,
             requires_structural_subtyping=requires_structural_subtyping,
         )

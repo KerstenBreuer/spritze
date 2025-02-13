@@ -2,7 +2,7 @@
 a Provider.
 """
 
-from collections.abc import Awaitable, Callable, Sequence
+from collections.abc import Awaitable, Callable
 from contextlib import (
     AbstractAsyncContextManager,
     AbstractContextManager,
@@ -10,6 +10,9 @@ from contextlib import (
 from dataclasses import dataclass
 from enum import Enum
 from types import FunctionType, ModuleType
+from typing import TypeAlias
+
+from .custom_types import TypeAnnotation
 
 
 class ConditionParams(Enum):
@@ -23,12 +26,12 @@ class ConditionParams(Enum):
 
 
 @dataclass
-class Condition:
+class DICondition:
     """Specification of conditions to match a ParameterDescription."""
 
-    type_: type | None = None
-    labels: Sequence[str] | None = None
-    tags: Sequence[str] | None = None
+    type_: TypeAnnotation | None = None
+    labels: frozenset[str] | None = None
+    tags: frozenset[str] | None = None
     module: ModuleType | None = None
     target: FunctionType | type | None = None
 
@@ -80,6 +83,11 @@ class LiteralProvider:
         return repr(self)
 
 
+ProviderSpec: TypeAlias = (
+    Provider | AsyncProvider | ContextProvider | AsyncContextProvider | LiteralProvider
+)
+
+
 class DISpec:
     """A specification that describes how Conditions (for matching
     ParametersDescriptions) are associated to Providers (to provide instances of the
@@ -88,26 +96,11 @@ class DISpec:
 
     def __init__(
         self,
-        map: dict[
-            Condition,
-            Provider
-            | AsyncProvider
-            | ContextProvider
-            | AsyncContextProvider
-            | LiteralProvider,
-        ],
+        map: dict[DICondition, ProviderSpec],
     ):
         self.map = map
 
-    def add(
-        self,
-        condition: Condition,
-        provider: Provider
-        | AsyncProvider
-        | ContextProvider
-        | AsyncContextProvider
-        | LiteralProvider,
-    ):
+    def add(self, condition: DICondition, provider: ProviderSpec):
         """Add a condition-provider pair to the spec."""
         self.map[condition] = provider
 
