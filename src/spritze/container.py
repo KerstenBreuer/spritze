@@ -1,33 +1,11 @@
 """Mock up of a container"""
 
-from abc import ABC
 from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Callable
 
+from .context import DIContext
+from .delivery import set_dependency_context
 from .spec import DICondition, DISpec, ProviderSpec
-
-
-class DIMatcher(ABC):  # noqa: B024
-    """Implementations of this class are responsible for matching ParameterDescription
-    objects to DIRecords.
-    """
-
-    pass
-
-
-class DIContext:
-    """A resolver for dependency injection records active in a specific context."""
-
-    def __init__(self, spec: DISpec, matcher: DIMatcher):
-        self.spec = spec
-        self.matcher = matcher
-
-    def resolve(self, subject: Callable) -> object:
-        """Resolves a callable by automatically constructing and wiring all its
-        dependencies.
-        """
-        raise NotImplementedError
 
 
 class GeneralDIContainer:
@@ -39,11 +17,11 @@ class GeneralDIContainer:
     ):
         self.spec = DISpec(map)
 
-    def add(self, condition: DICondition, provider: ProviderSpec):
-        """Add a condition-provider pair to the spec."""
-        self.spec.add(condition=condition, provider=provider)
-
     @contextmanager
-    def new_context(self) -> Generator[None, None, DIContext]:
-        """Get a new DI Context trough a context manager interface."""
-        raise NotImplementedError
+    def new_context(self) -> Generator[DIContext, None, None]:
+        """Creates a new DIContext and makes it available (via the delivery mechanism)
+        in scope of a with-statement context.
+        """
+        di_context = DIContext(spec=self.spec)
+        with set_dependency_context(di_context):
+            yield di_context
