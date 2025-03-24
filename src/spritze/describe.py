@@ -13,6 +13,8 @@ from .custom_types import NoTypeAnnotation, TypeAnnotation
 class ParameterDescription:
     """Describes an parameter to a callable that shall be dependency injected."""
 
+    name: str
+    kwargs_enabled: bool
     type_: TypeAnnotation
     labels: frozenset[str]
     tags: frozenset[str] = frozenset()
@@ -54,6 +56,8 @@ def describe_parameters(target: Callable) -> Iterable[ParameterDescription]:
         requires_structural_subtyping = check_structural_subtyping_requirement(type_)
 
         yield ParameterDescription(
+            name=name,
+            kwargs_enabled=param.kind == inspect.Parameter.VAR_KEYWORD,
             labels=frozenset(name),
             type_=type_,
             requires_structural_subtyping=requires_structural_subtyping,

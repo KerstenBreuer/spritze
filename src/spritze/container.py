@@ -5,7 +5,8 @@ from contextlib import contextmanager
 
 from .context import DIContext
 from .delivery import set_dependency_context
-from .spec import DICondition, DISpec, ProviderSpec
+from .match import DIMatchMaker
+from .spec import DISpec
 
 
 class GeneralDIContainer:
@@ -13,15 +14,16 @@ class GeneralDIContainer:
 
     def __init__(
         self,
-        map: dict[DICondition, ProviderSpec],
+        spec: DISpec,
     ):
-        self.spec = DISpec(map)
+        self.spec = spec
+        self._matcher = DIMatchMaker(spec=self.spec)
 
     @contextmanager
-    def new_context(self) -> Generator[DIContext, None, None]:
+    def apply(self) -> Generator[DIContext, None, None]:
         """Creates a new DIContext and makes it available (via the delivery mechanism)
         in scope of a with-statement context.
         """
-        di_context = DIContext(spec=self.spec)
+        di_context = DIContext(matcher=self._matcher)
         with set_dependency_context(di_context):
             yield di_context
